@@ -69,7 +69,7 @@ template<typename Key, typename Value, class Less>
 typename listmap<Key, Value, Less>::iterator
 listmap<Key, Value, Less>::find(const key_type &that) {
     DEBUGF ('l', that);
-    node *newNode;
+    node *newNode = nullptr;
     auto bgin = this->anchor_.next;
     while(bgin != this->anchor()){
         if(bgin->value.first == that){
@@ -78,7 +78,7 @@ listmap<Key, Value, Less>::find(const key_type &that) {
         }
         bgin = bgin->next;
     } if (newNode == nullptr){
-        return iterator();
+        return iterator(anchor());
     }
     return iterator(newNode);
 }
@@ -99,7 +99,7 @@ listmap<Key, Value, Less>::erase(iterator position) {
      }
      bgin = bgin->next;
  }
- 
+
  auto f = bgin->next;
  bgin->next->prev = bgin->prev;
  bgin->prev->next = bgin->next;

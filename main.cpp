@@ -32,6 +32,7 @@ void scan_options (int argc, char** argv) {
    }
 }
 
+
 int main (int argc, char** argv) {
    sys_info::execname (argv[0]);
    scan_options (argc, argv);
@@ -42,6 +43,7 @@ int main (int argc, char** argv) {
       cout << "Before insert: " << pair << endl;
       test.insert (pair);
    }
+   cout << endl;
 
    for (str_str_map::iterator itor = test.begin();
         itor != test.end(); ++itor) {
@@ -49,9 +51,58 @@ int main (int argc, char** argv) {
    }
 
    str_str_map::iterator itor = test.begin();
-   test.erase (itor);
+   itor = test.erase (itor);
 
-   cout << "EXIT_SUCCESS" << endl;
+    for (str_str_map::iterator itor = test.begin();
+         itor != test.end(); ++itor) {
+        cout << "During iteration: " << *itor << endl;
+    }
+
+    cout << endl << *test.find("one") << endl;
+
+
+    for (str_str_map::iterator itor = test.begin();
+         itor != test.end(); ++itor) {
+        cout << "During iteration: " << *itor << endl;
+    }
+
+    cout << *itor<< " 1: " << endl;
+    ++itor;
+    cout << *itor<< " 2: " << endl;
+    itor = test.erase(itor);
+    cout << *itor<< " 3: " << endl ;
+
+    cout << endl;
+    for (str_str_map::iterator itor = test.begin();
+         itor != test.end(); ++itor) {
+        cout << "During iteration: " << *itor << endl;
+    }
+    cout << endl;
+    for (str_str_map::iterator itor = test.begin();
+         itor != test.end(); ++itor) {
+        cout << "During iteration: " << *itor << endl;
+    }
+    cout <<endl;
+    str_str_pair pair1 ("three", "3");
+    str_str_pair pair2 ("for", "4");
+    test.insert(pair1);
+    test.insert(pair2);
+
+    --itor;
+    itor = test.erase(itor);
+    ++itor;
+    ++itor;
+    itor = test.erase(itor);
+
+    cout << endl;
+    cout << *itor<< endl;
+    for (str_str_map::iterator itor = test.begin();
+         itor != test.end(); ++itor) {
+        cout << "During iteration: " << *itor << endl;
+    }
+
+
+    cout << "EXIT_SUCCESS" << endl;
    return EXIT_SUCCESS;
 }
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <unistd.h>
 #include <fstream>
+#include <regex>
 
 using namespace std;
 
@@ -33,21 +34,113 @@ void scan_options(int argc, char **argv) {
     }
 }
 
-void process_file(istream &s, string name) {
+void equalsVal(string val, str_str_map& strMap){
+
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ++itor) {
+       auto p =  *itor;
+        if (p.second == val){
+            cout << p.first << " = " << p.second << endl;
+        }
+    }
+}
+
+void erase(string key, str_str_map& strMap){
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ++itor) {
+        auto p =  *itor;
+        if (p.first == key){
+            strMap.erase(itor);
+//            auto p1 = &itor;
+//            delete(p1);
+        }
+    }
+}
+
+void printAllPairs(str_str_map& strMap){
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ++itor) {
+        auto p =  *itor;
+        cout << p.first << " = " << p.second << endl;
+    }
+}
+
+void updateMap(string key, string val, str_str_map& strMap){
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ++itor) {
+        auto p =  *itor;
+        if (p.first == key){
+           p.second = val;
+            return;
+        }
+    }
+
+    str_str_pair pair(key, val);
+    strMap.insert(pair);
+}
+
+void printPair(string key, str_str_map& strMap) {
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ++itor) {
+        auto p = *itor;
+        if (p.first == key) {
+            cout << p.first << " = " << p.second << endl;
+            return;
+        }
+    }
+}
+
+void process_file(istream &s, string name, str_str_map& strMap) {
+    regex comment_regex {R"(^\s*(#.*)?$)"};
+    regex key_value_regex {R"(^\s*(.*?)\s*=\s*(.*?)\s*$)"};
+    regex trimmed_regex {R"(^\s*([^=]+?)\s*$)"};
     string line;
-    int i = 0;
+    int i = 1;
     while (getline(s, line)) {
         cout << name << ": " << i++ << ": " << line << endl;
+
+        smatch result;
+        if (regex_search (line, result, comment_regex)) {
+            cout << "Comment or empty line." << endl;
+            continue;
+        }
+        if (regex_search (line, result, key_value_regex)) {
+//            cout << "key  : \"" << result[1] << "\"" << endl;
+//            cout << "value: \"" << result[2] << "\"" << endl;
+        if (result[1] == "" and result[2] != "" ){
+          //'=val' ; print all keyval pair with val
+          equalsVal(result[2],strMap);
+
+        }else if (result[1] != "" and result[2] == ""){
+            //'key=' ; deletes key val pair
+            erase(result[1],strMap);
+
+        } else if(result[1] == "" and result[2] == ""){
+           //'=' ; print out all key val pairs
+            printAllPairs(strMap);
+
+        } else if (result[1] != "" and result[2] != ""){
+            // 'key=val' ; add key val pair to map, updating if exists
+            updateMap(result[1], result[2], strMap);
+        }
+
+        } else if (regex_search (line, result, trimmed_regex)) {
+            //cout << "query: \"" << result[1] << "\"" << endl;
+            // 'key' - print out keyval pair if found.
+            printPair(result[1], strMap);
+        }
     }
 }
 
 
 int main(int argc, char **argv) {
+
     sys_info::execname(argv[0]);
     scan_options(argc, argv);
 
+    str_str_map strMap;
     if (argc == 1) {
-        process_file(cin, "-");
+        process_file(cin, "-",strMap);
     } else {
         for (char **argp = &argv[optind]; argp != &argv[argc]; ++argp) {
             ifstream myfile;
@@ -59,7 +152,7 @@ int main(int argc, char **argv) {
             }
 
             istream &s = myfile;
-            process_file(s, *argp);
+            process_file(s, *argp, strMap);
             myfile.close();
         }
     }

@@ -13,9 +13,9 @@
 // listmap::node::node (link*, link*, const value_type&)
 //
 template<typename Key, typename Value, class Less>
-listmap<Key, Value, Less>::node::node(node *next, node *prev,
+listmap<Key, Value, Less>::node::node(node *next_, node *prev_,
                                       const value_type &value_):
-        link(next, prev), value(value_) {
+        link(next_, prev_), value(value_) {
 }
 
 //
@@ -42,7 +42,8 @@ listmap<Key, Value, Less>::insert(const value_type &pair) {
     DEBUGF ('l', &pair << "->" << pair);
 
     node *newNode;
-    if (this->anchor_.next == this->anchor() and this->anchor_.prev == this->anchor()) {
+    if (this->anchor_.next == this->anchor() and
+    this->anchor_.prev == this->anchor()) {
         newNode = new node(anchor(), anchor(), pair);
         this->anchor_.next = newNode;
         this->anchor_.prev = newNode;

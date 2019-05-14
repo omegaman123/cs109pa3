@@ -156,11 +156,16 @@ int main(int argc, char **argv) {
             istream &s = myfile;
             process_file(s, *argp, strMap);
             myfile.close();
+
         }
+
     }
 
+    for (str_str_map::iterator itor = strMap.begin();
+         itor != strMap.end(); ) {
+         itor =  strMap.erase(itor);
+    }
 
-    cout << "EXIT_SUCCESS" << endl;
     return EXIT_SUCCESS;
 }
 
